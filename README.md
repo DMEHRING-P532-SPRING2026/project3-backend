@@ -26,5 +26,5 @@ docker run -p 8080:8080 -v ${PWD}/data:/app/data tracker:latest
 **Reasoning:** Instead of having to do all of the validation and figuring out what type of observation it was in our manager/commands we delegate this to the factory which will do this all for us such that we may reuse it. This lives in the manager folder for now.
 
 ### Command
-**Files:** `Command`, `CreateObservationCommand`, `CreatePatientCommand`, `CreatePhenomenonTypeCommand`, `CreateProtocolCommand`, `DeletePhenomenonTypeCommand`, `DeleteProtocolCommand`, `RejectObservationCommand`, `UpdatePhenomenonTypeCommand`, `UpdateProtocolCommand`  
+**Files:** `Command`, `CreateObservationCommand`, `CreatePatientCommand`, `CreatePhenomenonTypeCommand`, `CreateProtocolCommand`, `DeletePhenomenonTypeCommand`, `DeleteProtocolCommand`, `RejectObservationCommand`, `UpdatePhenomenonTypeCommand`, `UpdateProtocolCommand`, `CommandRunner`
 **Reasoning:** By putting these all in commands it makes it easy to log and then eventually add more features since all actions are recorded in command objects. This lives in the command folder.
