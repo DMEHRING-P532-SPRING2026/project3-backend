@@ -15,20 +15,16 @@ docker run -p 8080:8080 -v ${PWD}/data:/app/data tracker:latest
 
 ### Strategy
 **Files:** `DiagnosisEngine`, `DiagnosisStrategy`, `SimpleConjunctiveStrategy`  
-**Location:** `engine/`  
-This design allows the rule evaluation algorithm to be swapped at runtime without hardcoding a specific strategy. `DiagnosisEngine` accepts any `DiagnosisStrategy` implementation, with `SimpleConjunctiveStrategy` as the Week 1 concrete strategy.
+**Reasoning:** This Design allows for us to switch out the strategy we use when executing rules on observations at runtime without having to hardcode out strategy. This lives in the engine folder.
 
 ### Observer
 **Files:** `AuditLogListener`, `ObservationEvent`, `RuleEvaluationListener`, `ObservationManager`  
-**Location:** `log/`  
-Whenever an observation is created or rejected, `ObservationManager` publishes an `ObservationEvent` via Spring's `ApplicationEventPublisher`. Registered listeners react independently — `AuditLogListener` appends to the audit log and `RuleEvaluationListener` re-evaluates diagnostic rules. New listeners can be added in Week 2 with zero changes to existing code.
+**Reasoning:** This allowed us to add listeners whenever a observation is added to a patient to log and rerun our rules, and in the future we can easily add more listeners. This lives in the log folder.
 
 ### Factory
 **Files:** `ObservationFactory`  
-**Location:** `manager/`  
-All validation and subtype discrimination for observations is centralised in the factory. Commands resolve database entities and pass them in — the factory validates compatibility (correct kind, allowed units, qualitative phenomenon type) and constructs the correct subtype. This keeps commands and managers free of observation-specific validation logic.
+**Reasoning:** Instead of having to do all of the validation and figuring out what type of observation it was in our manager/commands we delegate this to the factory which will do this all for us such that we may reuse it. This lives in the manager folder for now.
 
 ### Command
 **Files:** `Command`, `CreateObservationCommand`, `CreatePatientCommand`, `CreatePhenomenonTypeCommand`, `CreateProtocolCommand`, `DeletePhenomenonTypeCommand`, `DeleteProtocolCommand`, `RejectObservationCommand`, `UpdatePhenomenonTypeCommand`, `UpdateProtocolCommand`  
-**Location:** `command/`  
-Every state-changing user action is wrapped in a command object. `CommandRunner` executes each command and writes a `CommandLogEntry` with the payload serialised as JSON — capturing enough information to support undo in Week 2 without any schema changes.
+**Reasoning:** By putting these all in commands it makes it easy to log and then eventually add more features since all actions are recorded in command objects. This lives in the command folder.
