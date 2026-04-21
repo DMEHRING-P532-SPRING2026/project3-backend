@@ -25,6 +25,18 @@ public class AssociativeFunction {
     @JoinColumn(name = "product_concept_id")
     private Phenomenon productConcept;
 
+    @Enumerated(EnumType.STRING)
+    private DiagnosisStrategyType diagnosisStrategyType;
+
+    @ElementCollection
+    @CollectionTable(name = "associative_function_weights",
+            joinColumns = @JoinColumn(name = "function_id"))
+    @Column(name = "weight")
+    @OrderColumn(name = "weight_index")
+    private List<Double> argumentWeights = new ArrayList<>();
+
+    private Double threshold;
+
     public AssociativeFunction(String name, List<PhenomenonType> argumentConcepts, Phenomenon productConcept) {
         this.name = name;
         this.argumentConcepts = argumentConcepts;
@@ -52,4 +64,20 @@ public class AssociativeFunction {
     public Phenomenon getProductConcept() { return productConcept; }
 
     public void setProductConcept(Phenomenon productConcept) { this.productConcept = productConcept; }
+
+    public DiagnosisStrategyType getDiagnosisStrategyType() {
+        return diagnosisStrategyType;
+    }
+
+    public void setDiagnosisStrategyType(DiagnosisStrategyType diagnosisStrategyType) {
+        this.diagnosisStrategyType = diagnosisStrategyType;
+    }
+
+    public List<Double> getArgumentWeights() { return argumentWeights; }
+
+    public void setArgumentWeights(List<Double> argumentWeights) { this.argumentWeights = argumentWeights; }
+
+    public Double getThreshold() { return threshold; }
+
+    public void setThreshold(Double threshold) { this.threshold = threshold; }
 }

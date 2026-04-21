@@ -1,14 +1,16 @@
 package iu.devinmehringer.project3.controller;
 
+import iu.devinmehringer.project3.controller.dto.InferenceResponse;
 import iu.devinmehringer.project3.controller.dto.ObservationResponse;
 import iu.devinmehringer.project3.controller.dto.PatientRequest;
 import iu.devinmehringer.project3.controller.dto.PatientResponse;
 import iu.devinmehringer.project3.manager.PatientManager;
+import iu.devinmehringer.project3.manager.UserManager;
 import iu.devinmehringer.project3.model.observation.CategoryObservation;
 import iu.devinmehringer.project3.model.observation.Measurement;
 import iu.devinmehringer.project3.model.observation.Observation;
-import iu.devinmehringer.project3.model.observation.Phenomenon;
 import iu.devinmehringer.project3.model.patient.Patient;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +20,17 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/patients")
-public class PatientController {
+public class PatientController extends BaseController {
 
     private final PatientManager patientManager;
 
     private static class ObservationMapper {
         public static ObservationResponse toDTO(Observation observation) {
-            String type;
-            String phenomenonTypeName;
-            String value;
-            String unit;
-            String phenomenonName;
+            String type = null;
+            String phenomenonTypeName = null;
+            String value = null;
+            String unit = null;
+            String phenomenonName = null;
 
             if (observation instanceof Measurement m) {
                 type = "measurement";
@@ -42,9 +44,11 @@ public class PatientController {
                 value = c.getPresence().toString();
                 unit = null;
                 phenomenonName = c.getPhenomenon().getName();
-            } else {
-                throw new IllegalArgumentException("Unknown observation type");
             }
+
+            String source = observation instanceof CategoryObservation c
+                    ? c.getSource().toString()
+                    : null;
 
             return new ObservationResponse(
                     observation.getId(),
@@ -56,7 +60,12 @@ public class PatientController {
                     observation.getRecordedAt(),
                     observation.getApplicableAt(),
                     observation.getProtocol() != null ? observation.getProtocol().getName() : null,
-                    observation.getStatus().toString()
+                    observation.getStatus().toString(),
+                    observation.getPerformedBy() != null ? observation.getPerformedBy().getUsername() : null,
+                    observation.getFlag() != null ? observation.getFlag().toString() : null,
+                    observation.getRejectionReason(),
+                    observation.getRejectedBy() != null ? observation.getRejectedBy().getId() : null,
+                    source
             );
         }
     }
@@ -68,12 +77,15 @@ public class PatientController {
         }
     }
 
-    public PatientController(PatientManager patientManager) {
+    public PatientController(PatientManager patientManager, UserManager userManager) {
+        super(userManager);
         this.patientManager = patientManager;
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPatient(@RequestBody PatientRequest request) {
+    public ResponseEntity<Void> createPatient(@RequestBody PatientRequest request,
+                                              HttpServletRequest httpRequest) {
+        stampUser(request, httpRequest);
         patientManager.createPatient(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -97,13 +109,7 @@ public class PatientController {
     }
 
     @PostMapping("/{id}/evaluate")
-    public ResponseEntity<List<String>> evaluate(@PathVariable Long id) {
-        List<Phenomenon> inferences = patientManager.evaluate(id);
-        return ResponseEntity.ok(
-                inferences.stream()
-                        .map(Phenomenon::getName)
-                        .collect(Collectors.toList())
-        );
+    public ResponseEntity<List<InferenceResponse>> evaluate(@PathVariable Long id) {
+        return ResponseEntity.ok(patientManager.evaluate(id));
     }
-
 }

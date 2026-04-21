@@ -18,7 +18,9 @@ public class CreateObservationCommand implements Command {
     private final PhenomenonTypeAccess phenomenonTypeAccess;
     private final PhenomenonAccess phenomenonAccess;
     private Observation savedObservation;
+    private final Long observationId;
 
+    // normal constructor
     public CreateObservationCommand(ObservationRequest request,
                                     ObservationAccess observationAccess,
                                     PatientAccess patientAccess,
@@ -31,6 +33,17 @@ public class CreateObservationCommand implements Command {
         this.protocolAccess = protocolAccess;
         this.phenomenonTypeAccess = phenomenonTypeAccess;
         this.phenomenonAccess = phenomenonAccess;
+        this.observationId = null;
+    }
+
+    public CreateObservationCommand(ObservationAccess observationAccess, Long observationId) {
+        this.request = null;
+        this.observationAccess = observationAccess;
+        this.observationId = observationId;
+        this.patientAccess = null;
+        this.protocolAccess = null;
+        this.phenomenonTypeAccess = null;
+        this.phenomenonAccess = null;
     }
 
     @Override
@@ -55,9 +68,19 @@ public class CreateObservationCommand implements Command {
         }
 
         Observation observation = ObservationFactory.create(
-                request, patient, protocol, phenomenonType, phenomenon
-        );
+                request, patient, protocol, phenomenonType, phenomenon,
+                ObservationSource.MANUAL);
         savedObservation = observationAccess.save(observation);
+    }
+
+    @Override
+    public void undo() {
+        Long idToUndo = observationId != null ? observationId : savedObservation.getId();
+        Observation obs = observationAccess.findByID(idToUndo)
+                .orElseThrow(() -> new ObservationNotFoundException("Observation not found: " + idToUndo));
+        obs.setStatus(Status.REJECTED);
+        obs.setRejectionReason("Undone by user");
+        observationAccess.save(obs);
     }
 
     @Override

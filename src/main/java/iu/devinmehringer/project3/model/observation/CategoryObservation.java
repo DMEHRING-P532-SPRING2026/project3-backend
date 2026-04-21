@@ -8,6 +8,9 @@ public class CategoryObservation extends Observation {
     @Enumerated(EnumType.STRING)
     private Presence presence;
 
+    @Enumerated(EnumType.STRING)
+    private ObservationSource source = ObservationSource.MANUAL;
+
     @ManyToOne(optional = true)
     @JoinColumn(name = "phenomenon_id")
     private Phenomenon phenomenon;
@@ -33,5 +36,13 @@ public class CategoryObservation extends Observation {
 
     public void setPhenomenon(Phenomenon phenomenon) {
         this.phenomenon = phenomenon;
+    }
+
+    public ObservationSource getSource() {
+        return source;
+    }
+
+    public void setSource(ObservationSource source) {
+        this.source = source;
     }
 }

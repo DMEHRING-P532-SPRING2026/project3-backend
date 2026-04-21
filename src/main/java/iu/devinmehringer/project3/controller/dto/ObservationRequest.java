@@ -1,11 +1,14 @@
 package iu.devinmehringer.project3.controller.dto;
 
+import iu.devinmehringer.project3.model.user.User;
+
 import java.time.LocalDateTime;
 
-public class ObservationRequest {
+public class ObservationRequest extends BaseRequest {
     private Long patientId;
     private Long protocolId;
     private LocalDateTime applicableAt;
+    public LocalDateTime recordedAt;
 
     public Long getPatientId() { return patientId; }
 

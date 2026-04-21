@@ -2,6 +2,7 @@ package iu.devinmehringer.project3.model.observation;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,25 @@ public class PhenomenonType {
     @OneToMany(mappedBy = "phenomenonType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Phenomenon> phenomena = new ArrayList<>();
 
+    private BigDecimal normalMin;
+    private BigDecimal normalMax;
+
+
     public PhenomenonType(String name, Kind kind, List<String> allowedUnits, List<Phenomenon> phenomena) {
         this.name = name;
         this.kind = kind;
         this.allowedUnits = allowedUnits;
         this.phenomena = phenomena;
+    }
+
+    public PhenomenonType(String name, Kind kind, List<String> allowedUnits, List<Phenomenon> phenomena,
+                          BigDecimal normalMin, BigDecimal normalMax) {
+        this.name = name;
+        this.kind = kind;
+        this.allowedUnits = allowedUnits;
+        this.phenomena = phenomena;
+        this.normalMin = normalMin;
+        this.normalMax =normalMax;
     }
 
     public PhenomenonType() {}
@@ -89,5 +104,21 @@ public class PhenomenonType {
 
     public boolean removePhenomenon(Phenomenon phenomenon) {
         return this.phenomena.remove(phenomenon);
+    }
+
+    public BigDecimal getNormalMin() {
+        return normalMin;
+    }
+
+    public void setNormalMin(BigDecimal normalMin) {
+        this.normalMin = normalMin;
+    }
+
+    public BigDecimal getNormalMax() {
+        return normalMax;
+    }
+
+    public void setNormalMax(BigDecimal normalMax) {
+        this.normalMax = normalMax;
     }
 }

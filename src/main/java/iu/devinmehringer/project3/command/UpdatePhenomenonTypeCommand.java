@@ -37,9 +37,15 @@ public class UpdatePhenomenonTypeCommand implements Command {
 
         phenomenonTypeAccess.save(existing);
     }
+
     @Override
     public CommandType getCommandType() {
         return CommandType.UPDATE_PHENOMENON_TYPE;
+    }
+
+    @Override
+    public void undo() {
+        throw new UnsupportedOperationException("Undo not supported for UPDATE_PHENOMENON_TYPE");
     }
 
     @Override

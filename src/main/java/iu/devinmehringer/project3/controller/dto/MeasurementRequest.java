@@ -1,11 +1,14 @@
 package iu.devinmehringer.project3.controller.dto;
 
+import iu.devinmehringer.project3.model.observation.Flag;
+
 import java.math.BigDecimal;
 
 public class MeasurementRequest extends ObservationRequest {
     private Long phenomenonTypeId;
     private BigDecimal amount;
     private String unit;
+    public Flag flag;
 
     public Long getPhenomenonTypeId() { return phenomenonTypeId; }
 
@@ -18,4 +21,8 @@ public class MeasurementRequest extends ObservationRequest {
     public String getUnit() { return unit; }
 
     public void setUnit(String unit) { this.unit = unit; }
+
+    public Flag getFlag() {
+        return flag;
+    }
 }

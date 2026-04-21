@@ -5,6 +5,7 @@ import iu.devinmehringer.project3.model.log.CommandLogEntry;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommandLogAccess {
@@ -20,5 +21,9 @@ public class CommandLogAccess {
 
     public List<CommandLogEntry> getAll() {
         return commandLogEntryRepository.findAll();
+    }
+
+    public Optional<CommandLogEntry> findById(Long id) {
+        return commandLogEntryRepository.findById(id);
     }
 }

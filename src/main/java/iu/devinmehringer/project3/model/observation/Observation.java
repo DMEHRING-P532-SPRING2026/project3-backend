@@ -1,9 +1,12 @@
 package iu.devinmehringer.project3.model.observation;
 
 import iu.devinmehringer.project3.model.patient.Patient;
+import iu.devinmehringer.project3.model.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "observations")
@@ -17,6 +20,10 @@ public abstract class Observation {
     @ManyToOne(optional = false)
     @JoinColumn(name = "patient_id")
     private Patient patient;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "performed_by_id")
+    private User performedBy;
 
     private LocalDateTime recordedAt;
     private LocalDateTime applicableAt;
@@ -34,6 +41,9 @@ public abstract class Observation {
     @JoinColumn(name = "protocol_id", nullable = true)
     private Protocol protocol;
 
+    @Enumerated(EnumType.STRING)
+    private Flag flag;
+
     public Observation(Patient patient, LocalDateTime recordedAt, LocalDateTime applicableAt, Status status, String rejectionReason, Observation rejectedBy, Protocol protocol) {
         this.patient = patient;
         this.recordedAt = recordedAt;
@@ -44,9 +54,7 @@ public abstract class Observation {
         this.protocol = protocol;
     }
 
-    public Observation() {
-
-    }
+    public Observation() {}
 
     public Long getId() {
         return id;
@@ -110,5 +118,21 @@ public abstract class Observation {
 
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+
+    public User getPerformedBy() {
+        return performedBy;
+    }
+
+    public void setPerformedBy(User performedBy) {
+        this.performedBy = performedBy;
+    }
+
+    public Flag getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Flag flag) {
+        this.flag = flag;
     }
 }

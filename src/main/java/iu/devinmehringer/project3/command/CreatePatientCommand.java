@@ -21,6 +21,11 @@ public class CreatePatientCommand implements Command {
     }
 
     @Override
+    public void undo() {
+        throw new UnsupportedOperationException("Undo not supported for CREATE_PATIENT");
+    }
+
+    @Override
     public CommandType getCommandType() {
         return CommandType.CREATE_PATIENT;
     }

@@ -32,6 +32,11 @@ public class UpdateProtocolCommand implements Command {
     }
 
     @Override
+    public void undo() {
+        throw new UnsupportedOperationException("Undo not supported for UPDATE_PROTOCOL");
+    }
+
+    @Override
     public CommandType getCommandType() {
         return CommandType.UPDATE_PROTOCOL;
     }

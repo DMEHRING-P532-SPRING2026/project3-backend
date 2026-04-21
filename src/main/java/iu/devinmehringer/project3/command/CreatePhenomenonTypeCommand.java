@@ -23,8 +23,8 @@ public class CreatePhenomenonTypeCommand implements Command {
         PhenomenonType phenomenonType;
         if (request.getKind().equals(Kind.QUANTITATIVE)) {
             phenomenonType = new PhenomenonType(
-                    request.getName(), request.getKind(), request.getAllowedUnits(), null
-            );
+                    request.getName(), request.getKind(), request.getAllowedUnits(), null,
+            request.getNormalMin(), request.getNormalMax());
         } else {
             phenomenonType = new PhenomenonType(
                     request.getName(), request.getKind(), null, new ArrayList<>()
@@ -34,6 +34,11 @@ public class CreatePhenomenonTypeCommand implements Command {
             }
         }
         phenomenonTypeAccess.save(phenomenonType);
+    }
+
+    @Override
+    public void undo() {
+        throw new UnsupportedOperationException("Undo not supported for CREATE_PHENOMENON_TYPE");
     }
 
     @Override

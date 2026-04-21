@@ -5,6 +5,8 @@ import iu.devinmehringer.project3.command.CreatePatientCommand;
 import iu.devinmehringer.project3.controller.dto.PatientRequest;
 import iu.devinmehringer.project3.controller.exception.InvalidCreatePatientRequestException;
 import iu.devinmehringer.project3.model.patient.Patient;
+import iu.devinmehringer.project3.model.user.Role;
+import iu.devinmehringer.project3.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,9 +34,11 @@ public class PatientManagerTest {
     @InjectMocks
     private PatientManager patientManager;
 
+    private User testUser;
+
     @BeforeEach
     void setUp() {
-        // runs before each test — set up any shared state here
+        testUser = new User("test", Role.CLINICIAN);
     }
 
     @Test
@@ -41,11 +47,12 @@ public class PatientManagerTest {
         PatientRequest patientRequest = new PatientRequest();
         patientRequest.setFullName(null);
         patientRequest.setDateOfBirth(null);
+        patientRequest.setPerformedBy(testUser);
 
         // Act / Assert
-        assertThrows(InvalidCreatePatientRequestException.class, () -> {
-            patientManager.createPatient(patientRequest);
-        });
+        assertThrows(InvalidCreatePatientRequestException.class, () ->
+                patientManager.createPatient(patientRequest)
+        );
     }
 
     @Test
@@ -55,12 +62,13 @@ public class PatientManagerTest {
         patientRequest.setFullName("John Smith");
         patientRequest.setDateOfBirth(LocalDate.of(1990, 5, 14));
         patientRequest.setNote("Referred by GP");
+        patientRequest.setPerformedBy(testUser);
 
         // Act
         patientManager.createPatient(patientRequest);
 
         // Assert
-        verify(commandRunner, times(1)).execute(any(CreatePatientCommand.class));
+        verify(commandRunner, times(1)).execute(any(CreatePatientCommand.class), eq(testUser));
     }
 
     @Test

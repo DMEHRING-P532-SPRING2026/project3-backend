@@ -2,7 +2,7 @@ package iu.devinmehringer.project3.controller.dto;
 
 import iu.devinmehringer.project3.model.observation.AccuracyRating;
 
-public class ProtocolRequest {
+public class ProtocolRequest extends BaseRequest {
     private String name;
     private String description;
     private AccuracyRating accuracyRating;

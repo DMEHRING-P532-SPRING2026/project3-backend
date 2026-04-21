@@ -20,6 +20,11 @@ public class CreateProtocolCommand implements Command {
     }
 
     @Override
+    public void undo() {
+        throw new UnsupportedOperationException("Undo not supported for CREATE_PROTOCOL");
+    }
+
+    @Override
     public CommandType getCommandType() {
         return CommandType.CREATE_PROTOCOL;
     }

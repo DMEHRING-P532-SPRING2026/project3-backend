@@ -15,6 +15,10 @@ public class Phenomenon {
     @JoinColumn(name = "phenomenon_type_id", nullable = false)
     private PhenomenonType phenomenonType;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_concept_id")
+    private Phenomenon parentConcept;
+
     public Phenomenon(String name, PhenomenonType phenomenonType) {
         this.name = name;
         this.phenomenonType = phenomenonType;
@@ -44,5 +48,13 @@ public class Phenomenon {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Phenomenon getParentConcept() {
+        return parentConcept;
+    }
+
+    public void setParentConcept(Phenomenon parentConcept) {
+        this.parentConcept = parentConcept;
     }
 }

@@ -2,7 +2,7 @@ package iu.devinmehringer.project3.controller.dto;
 
 import java.time.LocalDate;
 
-public class PatientRequest {
+public class PatientRequest extends BaseRequest {
     private String fullName;
     private LocalDate dateOfBirth;
     private String note;

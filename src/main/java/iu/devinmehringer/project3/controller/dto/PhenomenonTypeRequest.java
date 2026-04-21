@@ -2,13 +2,16 @@ package iu.devinmehringer.project3.controller.dto;
 
 import iu.devinmehringer.project3.model.observation.Kind;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public class PhenomenonTypeRequest {
+public class PhenomenonTypeRequest extends BaseRequest {
     private String name;
     private Kind kind;
     private List<String> allowedUnits;
     private List<String> phenomena;
+    private BigDecimal normalMin;
+    private BigDecimal normalMax;
 
     public List<String> getPhenomena() {
         return phenomena;
@@ -40,5 +43,21 @@ public class PhenomenonTypeRequest {
 
     public void setAllowedUnits(List<String> allowedUnits) {
         this.allowedUnits = allowedUnits;
+    }
+
+    public BigDecimal getNormalMin() {
+        return normalMin;
+    }
+
+    public void setNormalMin(BigDecimal normalMin) {
+        this.normalMin = normalMin;
+    }
+
+    public BigDecimal getNormalMax() {
+        return normalMax;
+    }
+
+    public void setNormalMax(BigDecimal normalMax) {
+        this.normalMax = normalMax;
     }
 }

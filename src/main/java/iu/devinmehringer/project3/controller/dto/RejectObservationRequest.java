@@ -1,6 +1,6 @@
 package iu.devinmehringer.project3.controller.dto;
 
-public class RejectObservationRequest {
+public class RejectObservationRequest extends BaseRequest {
     private String reason;
     private Long rejectedById;
 

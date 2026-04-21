@@ -26,6 +26,13 @@ public class RejectObservationCommand implements Command {
         this.observationAccess = observationAccess;
     }
 
+    // reconstruction constructor for undo
+    public RejectObservationCommand(ObservationAccess observationAccess, Long observationId) {
+        this.id = observationId;
+        this.request = null;
+        this.observationAccess = observationAccess;
+    }
+
     @Transactional
     @Override
     public void execute() {
@@ -42,6 +49,16 @@ public class RejectObservationCommand implements Command {
         }
 
         savedObservation = observationAccess.save(observation);
+    }
+
+    @Override
+    public void undo() {
+        Observation obs = observationAccess.findByID(id)
+                .orElseThrow(() -> new ObservationNotFoundException("Observation not found: " + id));
+        obs.setStatus(Status.ACTIVE);
+        obs.setRejectionReason(null);
+        obs.setRejectedBy(null);
+        observationAccess.save(obs);
     }
 
     @Override

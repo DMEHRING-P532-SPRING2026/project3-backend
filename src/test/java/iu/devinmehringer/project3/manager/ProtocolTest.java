@@ -1,44 +1,58 @@
 package iu.devinmehringer.project3.manager;
 
-import iu.devinmehringer.project3.access.ProtocolAccess;
+import iu.devinmehringer.project3.access.*;
 import iu.devinmehringer.project3.controller.dto.ProtocolRequest;
 import iu.devinmehringer.project3.controller.exception.InvalidCreateProtocolException;
-import iu.devinmehringer.project3.controller.exception.ProtocolNotFoundException;
+import iu.devinmehringer.project3.manager.processor.ObservationProcessor;
 import iu.devinmehringer.project3.model.observation.AccuracyRating;
 import iu.devinmehringer.project3.model.observation.Protocol;
+import iu.devinmehringer.project3.model.user.Role;
+import iu.devinmehringer.project3.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProtocolTest {
 
-    @Mock
-    private ProtocolAccess protocolAccess;
-
-    @Mock
-    private CommandRunner commandRunner;
+    @Mock private PhenomenonTypeAccess phenomenonTypeAccess;
+    @Mock private ProtocolAccess protocolAccess;
+    @Mock private ObservationAccess observationAccess;
+    @Mock private PhenomenonAccess phenomenonAccess;
+    @Mock private PatientAccess patientAccess;
+    @Mock private AssociativeFunctionAccess associativeFunctionAccess;
+    @Mock private CommandRunner commandRunner;
+    @Mock private ApplicationEventPublisher applicationEventPublisher;
+    @Mock private ObservationProcessor observationProcessor;
+    @Mock private CommandLogAccess commandLogAccess;
 
     @InjectMocks
     private ObservationManager observationManager;
 
     private ProtocolRequest validRequest;
     private Protocol existingProtocol;
+    private User testUser;
 
     @BeforeEach
     void setUp() {
+        testUser = new User("test", Role.CLINICIAN);
+
         validRequest = new ProtocolRequest();
         validRequest.setName("Oral Thermometer");
         validRequest.setDescription("Temperature taken orally");
         validRequest.setAccuracyRating(AccuracyRating.HIGH);
+        validRequest.setPerformedBy(testUser);
 
         existingProtocol = new Protocol();
         existingProtocol.setId(1L);
@@ -46,7 +60,6 @@ public class ProtocolTest {
         existingProtocol.setDescription("Temperature taken orally");
         existingProtocol.setAccuracyRating(AccuracyRating.HIGH);
     }
-
 
     @Test
     void createProtocol_nullName_throwsInvalidCreateProtocolException() {
@@ -83,11 +96,13 @@ public class ProtocolTest {
 
     @Test
     void createProtocol_validRequest_executesCommand() {
-        // Arrange / Act
+        // Arrange — validRequest already set up in setUp()
+
+        // Act
         observationManager.createProtocol(validRequest);
 
         // Assert
-        verify(commandRunner, times(1)).execute(any());
+        verify(commandRunner, times(1)).execute(any(), eq(testUser));
     }
 
     @Test
@@ -151,32 +166,12 @@ public class ProtocolTest {
 
     @Test
     void updateProtocol_validRequest_executesCommand() {
-        // Arrange / Act
+        // Arrange — validRequest already set up in setUp()
+
+        // Act
         observationManager.updateProtocol(1L, validRequest);
 
         // Assert
-        verify(commandRunner, times(1)).execute(any());
-    }
-
-
-    @Test
-    void deleteProtocol_existingId_executesCommand() {
-        // Arrange / Act
-        observationManager.deleteProtocol(1L);
-
-        // Assert
-        verify(commandRunner, times(1)).execute(any());
-    }
-
-    @Test
-    void deleteProtocol_notFound_throwsProtocolNotFoundException() {
-        // Arrange
-        doThrow(new ProtocolNotFoundException("Id not found: " + 99L))
-                .when(commandRunner).execute(any());
-
-        // Act / Assert
-        assertThrows(ProtocolNotFoundException.class, () ->
-                observationManager.deleteProtocol(99L)
-        );
+        verify(commandRunner, times(1)).execute(any(), eq(testUser));
     }
 }

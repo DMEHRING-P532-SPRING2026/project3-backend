@@ -3,6 +3,7 @@ package iu.devinmehringer.project3.manager;
 import iu.devinmehringer.project3.access.AssociativeFunctionAccess;
 import iu.devinmehringer.project3.access.PatientAccess;
 import iu.devinmehringer.project3.command.CreatePatientCommand;
+import iu.devinmehringer.project3.controller.dto.InferenceResponse;
 import iu.devinmehringer.project3.controller.dto.PatientRequest;
 import iu.devinmehringer.project3.controller.exception.InvalidCreatePatientRequestException;
 import iu.devinmehringer.project3.controller.exception.PatientNotFoundException;
@@ -35,7 +36,7 @@ public class PatientManager {
 
     public void createPatient(PatientRequest request) {
         validate(request);
-        commandRunner.execute(new CreatePatientCommand(request, patientAccess));
+        commandRunner.execute(new CreatePatientCommand(request, patientAccess), request.getPerformedBy());
     }
 
     public List<Patient> getPatients() {
@@ -57,7 +58,7 @@ public class PatientManager {
                     .collect(Collectors.toList());
     }
 
-    public List<Phenomenon> evaluate(Long patientId) {
+    public List<InferenceResponse> evaluate(Long patientId) {
         Patient patient = patientAccess.findById(patientId)
                 .orElseThrow(() -> new PatientNotFoundException("Id not found: " + patientId));
 

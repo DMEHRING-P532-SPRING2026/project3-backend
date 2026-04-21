@@ -7,14 +7,13 @@ import iu.devinmehringer.project3.controller.exception.InvalidObservationExcepti
 import iu.devinmehringer.project3.model.observation.*;
 import iu.devinmehringer.project3.model.patient.Patient;
 
-import java.time.LocalDateTime;
-
 public class ObservationFactory {
     public static Observation create(ObservationRequest request,
                                      Patient patient,
                                      Protocol protocol,
                                      PhenomenonType phenomenonType,
-                                     Phenomenon phenomenon) {
+                                     Phenomenon phenomenon,
+                                     ObservationSource source) {
 
         if (request.getPatientId() == null) {
             throw new InvalidObservationException("Patient id is required");
@@ -33,19 +32,18 @@ public class ObservationFactory {
             if (!phenomenonType.getKind().equals(Kind.QUANTITATIVE)) {
                 throw new InvalidObservationException("Phenomenon type must be quantitative");
             }
-            if (!phenomenonType.getAllowedUnits().contains(m.getUnit())) {
-                throw new InvalidObservationException("Unit not allowed for this phenomenon type");
-            }
 
             Measurement measurement = new Measurement();
             measurement.setPatient(patient);
             measurement.setProtocol(protocol);
-            measurement.setRecordedAt(LocalDateTime.now());
+            measurement.setRecordedAt(request.recordedAt);
             measurement.setApplicableAt(request.getApplicableAt());
             measurement.setStatus(Status.ACTIVE);
             measurement.setAmount(m.getAmount());
             measurement.setUnit(m.getUnit());
             measurement.setPhenomenonType(phenomenonType);
+            measurement.setPerformedBy(request.getPerformedBy());
+            measurement.setFlag(m.getFlag());
             return measurement;
 
         } else if (request instanceof CategoryObservationRequest c) {
@@ -59,11 +57,13 @@ public class ObservationFactory {
             CategoryObservation category = new CategoryObservation();
             category.setPatient(patient);
             category.setProtocol(protocol);
-            category.setRecordedAt(LocalDateTime.now());
+            category.setRecordedAt(request.recordedAt);
             category.setApplicableAt(request.getApplicableAt());
             category.setStatus(Status.ACTIVE);
             category.setPresence(c.getPresence());
             category.setPhenomenon(phenomenon);
+            category.setPerformedBy(request.getPerformedBy());
+            category.setSource(source);
             return category;
         }
 

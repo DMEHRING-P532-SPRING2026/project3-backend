@@ -13,11 +13,19 @@ public class ObservationResponse {
     private LocalDateTime applicableAt;
     private String protocolName;
     private String status;
+    private String performedBy;
+    private String flag;
+    private String rejectionReason;
+    private Long rejectedById;
+    private String source;
 
     public ObservationResponse(Long id, String type, String phenomenonTypeName,
                                String value, String unit, String phenomenonName,
                                LocalDateTime recordedAt, LocalDateTime applicableAt,
-                               String protocolName, String status) {
+                               String protocolName, String status,
+                               String performedBy, String flag,
+                               String rejectionReason, Long rejectedById,
+                               String source) {
         this.id = id;
         this.type = type;
         this.phenomenonTypeName = phenomenonTypeName;
@@ -28,8 +36,12 @@ public class ObservationResponse {
         this.applicableAt = applicableAt;
         this.protocolName = protocolName;
         this.status = status;
+        this.performedBy = performedBy;
+        this.flag = flag;
+        this.rejectionReason = rejectionReason;
+        this.rejectedById = rejectedById;
+        this.source = source;
     }
-
     public Long getId() {
         return id;
     }
@@ -108,5 +120,45 @@ public class ObservationResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPerformedBy() {
+        return performedBy;
+    }
+
+    public void setPerformedBy(String performedBy) {
+        this.performedBy = performedBy;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public Long getRejectedById() {
+        return rejectedById;
+    }
+
+    public void setRejectedById(Long rejectedById) {
+        this.rejectedById = rejectedById;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

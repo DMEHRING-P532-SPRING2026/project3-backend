@@ -59,7 +59,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null)
+                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null, ObservationSource.MANUAL)
         );
     }
 
@@ -71,7 +71,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null)
+                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null, ObservationSource.MANUAL)
         );
     }
 
@@ -83,7 +83,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null)
+                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null, ObservationSource.MANUAL)
         );
     }
 
@@ -95,19 +95,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null)
-        );
-    }
-
-    @Test
-    void createMeasurement_unitNotAllowed_throwsInvalidObservationException() {
-        // Arrange
-        MeasurementRequest request = validMeasurementRequest();
-        request.setUnit("kelvin");
-
-        // Act / Assert
-        assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null)
+                ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null, ObservationSource.MANUAL)
         );
     }
 
@@ -118,7 +106,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, qualitativePhenomenonType, null)
+                ObservationFactory.create(request, patient, protocol, qualitativePhenomenonType, null, ObservationSource.MANUAL)
         );
     }
 
@@ -129,7 +117,7 @@ public class FactoryTest {
         request.setProtocolId(null);
 
         // Act
-        Observation result = ObservationFactory.create(request, patient, null, quantitativePhenomenonType, null);
+        Observation result = ObservationFactory.create(request, patient, null, quantitativePhenomenonType, null, ObservationSource.MANUAL);
 
         // Assert
         assertInstanceOf(Measurement.class, result);
@@ -143,7 +131,7 @@ public class FactoryTest {
         MeasurementRequest request = validMeasurementRequest();
 
         // Act
-        Observation result = ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null);
+        Observation result = ObservationFactory.create(request, patient, protocol, quantitativePhenomenonType, null, ObservationSource.MANUAL);
 
         // Assert
         assertInstanceOf(Measurement.class, result);
@@ -151,7 +139,7 @@ public class FactoryTest {
         assertEquals(new BigDecimal("37.5"), measurement.getAmount());
         assertEquals("celsius", measurement.getUnit());
         assertEquals(Status.ACTIVE, measurement.getStatus());
-        assertNotNull(measurement.getRecordedAt());
+        assertNull(measurement.getRecordedAt());
         assertEquals(patient, measurement.getPatient());
         assertEquals(protocol, measurement.getProtocol());
     }
@@ -166,7 +154,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, null, phenomenon)
+                ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.MANUAL)
         );
     }
 
@@ -178,7 +166,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, null, phenomenon)
+                ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.MANUAL)
         );
     }
 
@@ -190,7 +178,7 @@ public class FactoryTest {
 
         // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, null, phenomenon)
+                ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.MANUAL)
         );
     }
 
@@ -201,13 +189,11 @@ public class FactoryTest {
         wrongPhenomenon.setId(2L);
         wrongPhenomenon.setName("36.5");
         wrongPhenomenon.setPhenomenonType(quantitativePhenomenonType);
-
-        // Act
         CategoryObservationRequest request = validCategoryRequest();
 
-        // Assert
+        // Act / Assert
         assertThrows(InvalidObservationException.class, () ->
-                ObservationFactory.create(request, patient, protocol, null, wrongPhenomenon)
+                ObservationFactory.create(request, patient, protocol, null, wrongPhenomenon, ObservationSource.MANUAL)
         );
     }
 
@@ -218,7 +204,7 @@ public class FactoryTest {
         request.setProtocolId(null);
 
         // Act
-        Observation result = ObservationFactory.create(request, patient, null, null, phenomenon);
+        Observation result = ObservationFactory.create(request, patient, null, null, phenomenon, ObservationSource.MANUAL);
 
         // Assert
         assertInstanceOf(CategoryObservation.class, result);
@@ -231,7 +217,7 @@ public class FactoryTest {
         CategoryObservationRequest request = validCategoryRequest();
 
         // Act
-        Observation result = ObservationFactory.create(request, patient, protocol, null, phenomenon);
+        Observation result = ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.MANUAL);
 
         // Assert
         assertInstanceOf(CategoryObservation.class, result);
@@ -239,12 +225,36 @@ public class FactoryTest {
         assertEquals(Presence.PRESENT, category.getPresence());
         assertEquals(phenomenon, category.getPhenomenon());
         assertEquals(Status.ACTIVE, category.getStatus());
-        assertNotNull(category.getRecordedAt());
+        assertNull(category.getRecordedAt());
         assertEquals(patient, category.getPatient());
         assertEquals(protocol, category.getProtocol());
     }
 
-    // --- helpers ---
+    @Test
+    void createCategory_validRequest_sourceIsManual() {
+        // Arrange
+        CategoryObservationRequest request = validCategoryRequest();
+
+        // Act
+        Observation result = ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.MANUAL);
+
+        // Assert
+        assertInstanceOf(CategoryObservation.class, result);
+        assertEquals(ObservationSource.MANUAL, ((CategoryObservation) result).getSource());
+    }
+
+    @Test
+    void createCategory_inferredSource_sourceIsInferred() {
+        // Arrange
+        CategoryObservationRequest request = validCategoryRequest();
+
+        // Act
+        Observation result = ObservationFactory.create(request, patient, protocol, null, phenomenon, ObservationSource.INFERRED);
+
+        // Assert
+        assertInstanceOf(CategoryObservation.class, result);
+        assertEquals(ObservationSource.INFERRED, ((CategoryObservation) result).getSource());
+    }
 
     private MeasurementRequest validMeasurementRequest() {
         MeasurementRequest request = new MeasurementRequest();

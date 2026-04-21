@@ -4,8 +4,10 @@ import iu.devinmehringer.project3.controller.dto.PhenomenonResponse;
 import iu.devinmehringer.project3.controller.dto.PhenomenonTypeRequest;
 import iu.devinmehringer.project3.controller.dto.PhenomenonTypeResponse;
 import iu.devinmehringer.project3.manager.ObservationManager;
+import iu.devinmehringer.project3.manager.UserManager;
 import iu.devinmehringer.project3.model.observation.Phenomenon;
 import iu.devinmehringer.project3.model.observation.PhenomenonType;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/phenomenon-types")
-public class PhenomenonTypeController {
+public class PhenomenonTypeController extends BaseController {
 
     private final ObservationManager observationManager;
 
@@ -42,12 +44,15 @@ public class PhenomenonTypeController {
         }
     }
 
-    public PhenomenonTypeController(ObservationManager observationManager) {
+    public PhenomenonTypeController(ObservationManager observationManager, UserManager userManager) {
+        super(userManager);
         this.observationManager = observationManager;
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPhenomenonType(@RequestBody PhenomenonTypeRequest request) {
+    public ResponseEntity<Void> createPhenomenonType(@RequestBody PhenomenonTypeRequest request,
+                                                     HttpServletRequest httpRequest) {
+        stampUser(request, httpRequest);
         observationManager.createPhenomenonType(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -62,14 +67,10 @@ public class PhenomenonTypeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePhenomenonType(@PathVariable Long id,
-                                                     @RequestBody PhenomenonTypeRequest request) {
+                                                     @RequestBody PhenomenonTypeRequest request,
+                                                     HttpServletRequest httpRequest) {
+        stampUser(request, httpRequest);
         observationManager.updatePhenomenonType(id, request);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePhenomenonType(@PathVariable Long id) {
-        observationManager.deletePhenomenonType(id);
         return ResponseEntity.ok().build();
     }
 }

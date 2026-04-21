@@ -1,5 +1,6 @@
 package iu.devinmehringer.project3.model.log;
 
+import iu.devinmehringer.project3.model.user.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,9 +17,17 @@ public class CommandLogEntry {
 
     private String payload;
     private LocalDateTime executedAt;
-    private String user;
 
-    public CommandLogEntry(CommandType commandType, String payload, LocalDateTime executedAt, String user) {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "observation_id")
+    private Long observationId;
+
+    private boolean isUndone = false;
+
+    public CommandLogEntry(CommandType commandType, String payload, LocalDateTime executedAt, User user) {
         this.commandType = commandType;
         this.payload = payload;
         this.executedAt = executedAt;
@@ -59,11 +68,27 @@ public class CommandLogEntry {
         this.executedAt = executedAt;
     }
 
-    public String getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(User user) {
         this.user = user;
+    }
+
+    public Long getObservationId() {
+        return observationId;
+    }
+
+    public void setObservationId(Long observationId) {
+        this.observationId = observationId;
+    }
+
+    public boolean isUndone() {
+        return isUndone;
+    }
+
+    public void setUndone(boolean undone) {
+        isUndone = undone;
     }
 }
